@@ -12,6 +12,10 @@ target_compile_options(main PRIVATE
     -pedantic-errors
 )
 
+# Include Raylib
+find_package(raylib CONFIG REQUIRED)
+target_link_libraries(main PRIVATE raylib)
+
 # Include headers from libs/lib
 # target_include_directories (main PRIVATE
 #	${CMAKE_SOURCE_DIR}/libs/include
