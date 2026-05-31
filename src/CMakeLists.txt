@@ -17,9 +17,9 @@ find_package(raylib CONFIG REQUIRED)
 target_link_libraries(main PRIVATE raylib)
 
 # Include headers from libs/lib
-# target_include_directories (main PRIVATE
-#	${CMAKE_SOURCE_DIR}/libs/include
-# )
+target_include_directories (main PRIVATE
+	${CMAKE_SOURCE_DIR}/libs/include
+)
 
 # Include libraries from libs/lib
 # target_link_directories (main PRIVATE
