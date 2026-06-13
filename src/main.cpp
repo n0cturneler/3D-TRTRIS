@@ -1,7 +1,7 @@
 #ifndef _DEBUG
 #pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
 #endif 
-	
+
 #include "Options.hpp"
 #include "Background.hpp"
 #include "Pieces.hpp"
@@ -37,7 +37,7 @@ int main()
 	camera.position = defaultCamPos;
 	camera.target = centerPoint;
 	camera.up = {0.0f, 1.0f, 0.0f};
-	
+
 	camera.fovy = 45.0f;
 	camera.projection = CAMERA_PERSPECTIVE;
 
@@ -45,7 +45,10 @@ int main()
 	float cycleProgress{};
 	float tickRate{1.0f / Options::Video::frameTime};
 
-	Piece piece1{{1,2,3}, Piece::Type::I};
+	//Clean this dogshit up
+	Vector3 spawnPosition{centerPoint.x + (Options::Game::cubeSize.x) / 2.0f, Options::Game::cubeSize.y / 2.0f, centerPoint.z - (Options::Game::cubeSize.z * Options::Game::rows) / 2.0f + (Options::Game::cubeSize.z) / 2.0f};
+
+	Piece piece1{{spawnPosition}, Piece::Type::T};
 
 	while (!WindowShouldClose())
 	{
@@ -58,10 +61,14 @@ int main()
 			++currentCycle;
 		}
 
+		Input::Actions currentAction{Input::getAction()};
+		piece1.updatePiece(currentAction, currentCycle);
+
 		ClearBackground(BLACK);
 		BeginMode3D(camera);
-
 		Background::draw();
+
+		piece1.drawPiece();
 
 		EndMode3D();
 

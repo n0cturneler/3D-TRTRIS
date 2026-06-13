@@ -12,7 +12,8 @@ using namespace Options;
 namespace Background
 {
 	void draw()
-	{
+	{		
+		//Clean this dogshit up
 		for (int i{0}; i <= Game::columns; i++)
 		{
 			Vector3 startPos{(Game::cubeSize.x * i) - (Game::cubeSize.x * Game::columns) / 2, 0.0f, +(Game::cubeSize.z * Game::rows) / 2};

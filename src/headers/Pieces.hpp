@@ -7,11 +7,13 @@
 #include <iostream> 
 #include <vector>
 #include <array>
+#include <cstdint>
 
-namespace PiecePos
+namespace PieceData
 {
 	using PieceOffset = std::array<Vector3, 4>;
 	using PieceRotations = std::array<PieceOffset, 4>;
+	using Pieces = std::array<PieceRotations, 7>;
 
 	constexpr Vector3 cubeSize{Options::Game::cubeSize};
 
@@ -24,7 +26,7 @@ namespace PiecePos
 	},
 		PieceOffset{
 			Vector3{0.0f, 0.0f, 0.0f},
-			Vector3{cubeSize.x, 0.0f, 0.0f},
+			Vector3{-cubeSize.x, 0.0f, 0.0f},
 			Vector3{0.0f, 0.0f, cubeSize.z},
 			Vector3{0.0f, 0.0f, -cubeSize.z}
 	},
@@ -36,10 +38,14 @@ namespace PiecePos
 	},
 		PieceOffset{
 			Vector3{0.0f, 0.0f, 0.0f},
-			Vector3{-cubeSize.x, 0.0f, 0.0f},
+			Vector3{cubeSize.x, 0.0f, 0.0f},
 			Vector3{0.0f, 0.0f, cubeSize.z},
 			Vector3{0.0f, 0.0f, -cubeSize.z}
-	},
+	}};
+
+	inline const Pieces Data
+	{
+		T_Piece,
 	};
 
 }
@@ -59,18 +65,18 @@ namespace Input
 		bool hardDrop{};
 	};
 
-	Actions getAction();
+	Input::Actions getAction();
 }
 
 class Piece
 {
 public:
-	enum class Type { I, O, Z, S, T, J, L };
+	enum class Type { T };
 
 	Piece(Vector3 spawnPos, Type type, int rotationState = 0);
 
-	void updatePiece(const Input::Actions& actions);
-	void drawPiece();
+	void updatePiece(const Input::Actions& actions, const std::uint64_t& currentCycle);
+	void drawPiece() const;
 
 private:
 	Vector3 m_pos{0.0f, 0.0f, 0.0f};
