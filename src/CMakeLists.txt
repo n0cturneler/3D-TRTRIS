@@ -2,7 +2,7 @@
 # project specific logic here.
 
 # Add source to this project's executable.
-add_executable (main  "main.cpp" "Piece.cpp" "Background.cpp" "UI.cpp")
+add_executable (main  "main.cpp" "Pieces.cpp" "Background.cpp" "UI.cpp" "Grid.cpp")
 target_compile_options(main PRIVATE
     -Wall
     -Wextra

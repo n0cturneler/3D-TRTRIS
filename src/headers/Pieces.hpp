@@ -1,8 +1,9 @@
 #pragma once
 
-#include <raylib.h>
-
+#include "Grid.hpp"
 #include "Options.hpp"
+
+#include <raylib.h>
 
 #include <iostream> 
 #include <vector>
@@ -10,40 +11,40 @@
 #include <cstdint>
 
 namespace PieceData
-{
-	using PieceOffset = std::array<Vector3, 4>;
+{	
+	using Grid2D = Grid::Grid2D;
+	using PieceOffset = std::array<Grid2D, 4>;
 	using PieceRotations = std::array<PieceOffset, 4>;
 	using Pieces = std::array<PieceRotations, 7>;
 
-	constexpr Vector3 cubeSize{Options::Game::cubeSize};
+	inline constexpr PieceRotations T_Piece{
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{1, 0},
+			Grid2D{-1, 0},
+			Grid2D{0, -1}
+		},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{1, 0},
+			Grid2D{0, 1},
+			Grid2D{0, -1}
+		},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{1, 0},
+			Grid2D{-1, 0},
+			Grid2D{0, 1}
+		},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{-1, 0},
+			Grid2D{0, 1},
+			Grid2D{0, -1}
+		}
+	};
 
-	inline const PieceRotations T_Piece{
-		PieceOffset{
-			Vector3{0.0f, 0.0f, 0.0f},
-			Vector3{cubeSize.x, 0.0f, 0.0f},
-			Vector3{-cubeSize.x, 0.0f, 0.0f},
-			Vector3{0.0f, 0.0f, cubeSize.z}
-	},
-		PieceOffset{
-			Vector3{0.0f, 0.0f, 0.0f},
-			Vector3{-cubeSize.x, 0.0f, 0.0f},
-			Vector3{0.0f, 0.0f, cubeSize.z},
-			Vector3{0.0f, 0.0f, -cubeSize.z}
-	},
-		PieceOffset{
-			Vector3{0.0f, 0.0f, 0.0f},
-			Vector3{cubeSize.x, 0.0f, 0.0f},
-			Vector3{-cubeSize.x, 0.0f, 0.0f},
-			Vector3{0.0f, 0.0f, -cubeSize.z}
-	},
-		PieceOffset{
-			Vector3{0.0f, 0.0f, 0.0f},
-			Vector3{cubeSize.x, 0.0f, 0.0f},
-			Vector3{0.0f, 0.0f, cubeSize.z},
-			Vector3{0.0f, 0.0f, -cubeSize.z}
-	}};
-
-	inline const Pieces Data
+	inline constexpr Pieces Data
 	{
 		T_Piece,
 	};
@@ -65,21 +66,23 @@ namespace Input
 		bool hardDrop{};
 	};
 
-	Input::Actions getAction();
+	Actions getAction();
 }
+
 
 class Piece
 {
 public:
 	enum class Type { T };
 
-	Piece(Vector3 spawnPos, Type type, int rotationState = 0);
+	Piece(Grid::Grid2D spawnPos, Type type, int rotationState = 0);
 
 	void updatePiece(const Input::Actions& actions, const std::uint64_t& currentCycle);
 	void drawPiece() const;
 
 private:
-	Vector3 m_pos{0.0f, 0.0f, 0.0f};
+	Grid::Grid2D m_gridPos{0, 0};
+
 	Type m_type{};
 	int m_rotationState{};
 };

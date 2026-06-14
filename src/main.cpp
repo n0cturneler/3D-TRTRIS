@@ -30,12 +30,9 @@ int main()
 	const int screenWidth{GetMonitorWidth(currentMonitor)};
 	const int screenHeight{GetMonitorHeight(currentMonitor)};
 
-	const Vector3 centerPoint{};
-	const Vector3 defaultCamPos{0.0f, Options::Game::camHeight, 1.0f};
-
 	Camera3D camera{};
-	camera.position = defaultCamPos;
-	camera.target = centerPoint;
+	camera.position = Options::Game::defaultCamPos;
+	camera.target = Options::Game::worldOrigin;
 	camera.up = {0.0f, 1.0f, 0.0f};
 
 	camera.fovy = 45.0f;
@@ -45,10 +42,7 @@ int main()
 	float cycleProgress{};
 	float tickRate{1.0f / Options::Video::frameTime};
 
-	//Clean this dogshit up
-	Vector3 spawnPosition{centerPoint.x + (Options::Game::cubeSize.x) / 2.0f, Options::Game::cubeSize.y / 2.0f, centerPoint.z - (Options::Game::cubeSize.z * Options::Game::rows) / 2.0f + (Options::Game::cubeSize.z) / 2.0f};
-
-	Piece piece1{{spawnPosition}, Piece::Type::T};
+	Piece piece1{{Options::Game::gridSpawn}, Piece::Type::T};
 
 	while (!WindowShouldClose())
 	{
@@ -65,7 +59,9 @@ int main()
 		piece1.updatePiece(currentAction, currentCycle);
 
 		ClearBackground(BLACK);
+
 		BeginMode3D(camera);
+
 		Background::draw();
 
 		piece1.drawPiece();
