@@ -7,52 +7,52 @@
 
 #include <print>
 
-using namespace Options;
+using namespace options;
 
 namespace Background
 {
 	void draw()
 	{
 		// Buffer Grid
-		for (int i{0}; i <= Game::bufferRows; i++)
+		for (int i{0}; i <= game::bufferRows; i++)
 		{
-			float zPos{Game::cubeSize.z * i};
+			float zPos{game::cubeSize.z * static_cast<float>(i)};
 
-			Vector3 startPos{Game::halfWidth, 0.0f, zPos - Game::fullHeight - Game::halfHeight};
-			Vector3 endPos{-Game::halfWidth, 0.0f, zPos - Game::fullHeight - Game::halfHeight};
+			Vector3 startPos{game::halfWidth, 0.0f, zPos - game::fullHeight - game::halfHeight};
+			Vector3 endPos{-game::halfWidth, 0.0f, zPos - game::fullHeight - game::halfHeight};
 
-			DrawLine3D(startPos, endPos, Colors::backgroundBufferLines);
+			DrawLine3D(startPos, endPos, colors::backgroundBufferLines);
 		}
 
-		for (int i{0}; i <= Game::columns; i++)
+		for (int i{0}; i <= game::columns; i++)
 		{
-			float xPos{Game::cubeSize.x * i};
+			float xPos{game::cubeSize.x * static_cast<float>(i)};
 
-			Vector3 startPos{xPos - Game::halfWidth, 0.0f, -Game::fullHeight + Game::halfHeight};
-			Vector3 endPos{xPos - Game::halfWidth, 0.0f, -Game::fullHeight - Game::halfHeight};
+			Vector3 startPos{xPos - game::halfWidth, 0.0f, -game::fullHeight + game::halfHeight};
+			Vector3 endPos{xPos - game::halfWidth, 0.0f, -game::fullHeight - game::halfHeight};
 
-			DrawLine3D(startPos, endPos, Colors::backgroundBufferLines);
+			DrawLine3D(startPos, endPos, colors::backgroundBufferLines);
 		}
 
 		// Play Grid
-		for (int i{0}; i <= Game::columns; i++)
+		for (int i{0}; i <= game::columns; i++)
 		{
-			float xPos{Game::cubeSize.x * i};
+			float xPos{game::cubeSize.x * static_cast<float>(i)};
 
-			Vector3 startPos{xPos - Game::halfWidth, 0.0f, Game::halfHeight};
-			Vector3 endPos{xPos - Game::halfWidth, 0.0f, -Game::halfHeight};
+			Vector3 startPos{xPos - game::halfWidth, 0.0f, game::halfHeight};
+			Vector3 endPos{xPos - game::halfWidth, 0.0f, -game::halfHeight};
 
-			DrawLine3D(startPos, endPos, Colors::backgroundLines);
+			DrawLine3D(startPos, endPos, colors::backgroundLines);
 		}
 
-		for (int i{0}; i <= Game::rows; i++)
+		for (int i{0}; i <= game::rows; i++)
 		{
-			float zPos{Game::cubeSize.z * i};
+			float zPos{game::cubeSize.z * static_cast<float>(i)};
 
-			Vector3 startPos{Game::halfWidth, 0.0f, zPos - Game::halfHeight};
-			Vector3 endPos{-Game::halfWidth, 0.0f, zPos - Game::halfHeight};
+			Vector3 startPos{game::halfWidth, 0.0f, zPos - game::halfHeight};
+			Vector3 endPos{-game::halfWidth, 0.0f, zPos - game::halfHeight};
 
-			DrawLine3D(startPos, endPos, Colors::backgroundLines);
+			DrawLine3D(startPos, endPos, colors::backgroundLines);
 		}
 	}
 }

@@ -19,7 +19,7 @@
         "rhs": "Windows"
       },
       "vendor": {
-         "microsoft.com/VisualStudioSettings/CMake/1.0": {
+         "microsoft.com/VisualStudioRemoteSettings/CMake/2.0": {
           "intelliSenseMode": "windows-clang-x64"
         }
       }

@@ -1,9 +1,10 @@
 {
   "name": "3dtrtris",
   "version": "1.0.0",
-  "builtin-baseline": "22d9c655dc24ad24c6cac27607005e619ce46740",
+  "builtin-baseline": "44819aa2a6c10e56065e2b0330e7d6c89d1d2574",
   "dependencies": [
-    "raylib"
+    "raylib",
+    "imgui"
   ],
   "overrides": [
     {

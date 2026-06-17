@@ -5,15 +5,19 @@
 #include "Options.hpp"
 #include "Background.hpp"
 #include "Pieces.hpp"
+#include "Camera.hpp"
 #include "UI.hpp"
+#include "Cube.hpp"
 
 #include <raylib.h>
-#include <raymath.h>
+
+#include <imgui.h>
 
 #include <iostream> 
 #include <vector>
 #include <cstdint>
 #include <print>
+#include <chrono>
 
 int main()
 {
@@ -24,44 +28,30 @@ int main()
 	InitWindow(0, 0, "3DTRTRIS");
 	MaximizeWindow();
 
-	SetTargetFPS(Options::Video::frameTime);
+	SetTargetFPS(options::video::frameRate);
 
-	const int currentMonitor = GetCurrentMonitor();
-	const int screenWidth{GetMonitorWidth(currentMonitor)};
-	const int screenHeight{GetMonitorHeight(currentMonitor)};
+	[[maybe_unused]] const int currentMonitor = GetCurrentMonitor();
+	[[maybe_unused]] const int screenWidth{GetMonitorWidth(currentMonitor)};
+	[[maybe_unused]] const int screenHeight{GetMonitorHeight(currentMonitor)};
 
-	Camera3D camera{};
-	camera.position = Options::Game::defaultCamPos;
-	camera.target = Options::Game::worldOrigin;
-	camera.up = {0.0f, 1.0f, 0.0f};
+	Camera3D camera{cam::initializeCamera()};	
+	Piece piece1{{options::game::gridSpawn}, Piece::Type::Z};
 
-	camera.fovy = 45.0f;
-	camera.projection = CAMERA_PERSPECTIVE;
-
-	std::uint64_t currentCycle{};
-	float cycleProgress{};
-	float tickRate{1.0f / Options::Video::frameTime};
-
-	Piece piece1{{Options::Game::gridSpawn}, Piece::Type::T};
+	std::chrono::time_point<std::chrono::steady_clock> lastGravityTick{std::chrono::steady_clock::now()};
 
 	while (!WindowShouldClose())
-	{
-		float dt{GetFrameTime()};
-		cycleProgress += dt;
+	{	
+		[[maybe_unused]] float dt{GetFrameTime()};
+		
+		float mouseWheelMovement = GetMouseWheelMove();
+		camera.position = cam::updateCamera(camera.position, mouseWheelMovement);
 
-		if (cycleProgress >= tickRate)
-		{
-			cycleProgress -= tickRate;
-			++currentCycle;
-		}
-
-		Input::Actions currentAction{Input::getAction()};
-		piece1.updatePiece(currentAction, currentCycle);
+		input::PieceActions currentAction{input::getPieceAction()};
+		piece1.updatePiece(currentAction, lastGravityTick);
 
 		ClearBackground(BLACK);
-
 		BeginMode3D(camera);
-
+		
 		Background::draw();
 
 		piece1.drawPiece();
@@ -71,7 +61,6 @@ int main()
 		UI::draw();
 
 		EndDrawing();
-
 	}
 
 	CloseWindow();

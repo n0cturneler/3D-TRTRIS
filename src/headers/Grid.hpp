@@ -2,7 +2,7 @@
 
 #include <raylib.h>
 
-namespace Grid
+namespace grid
 {
 	struct Grid2D
 	{
