@@ -12,6 +12,7 @@ using namespace options;
 #include <cmath>
 #include <algorithm>
 #include <chrono>
+#include <cassert>
 
 Piece::Piece(grid::Grid2D spawnPos, Type type, int rotationState)
 	: m_gridPos{spawnPos}, m_type{type}, m_rotationState{rotationState}
@@ -73,17 +74,31 @@ void Piece::updatePiece(const input::PieceActions& actions, std::chrono::time_po
 
 void Piece::drawPiece() const
 {
+	assert(static_cast<int>(m_type) < 7);
+	assert(m_rotationState >= 0 && m_rotationState < 4);
+
 	auto pieceIndex{static_cast<std::size_t>(m_type)};
 	auto rotationState{static_cast<std::size_t>(m_rotationState)};
-	const auto& data{pieceData::Data[pieceIndex][rotationState]};
+	const auto& data{pieceData::Data[pieceIndex][rotationState]};	
 
 	for (const grid::Grid2D& offset : data)
 	{	
-		Vector3 position = grid::gridToWorld(grid::add(m_gridPos, offset));
+		grid::Grid2D gridPosition = grid::add(m_gridPos, offset);
+		Vector3 position = grid::gridToWorld(gridPosition);
 
-		DrawCube(position, game::cubeSize.x, game::cubeSize.y, game::cubeSize.z, colors::pieceColors[pieceIndex]);
-		DrawCubeWires(position, game::cubeSize.x, game::cubeSize.y, game::cubeSize.z, colors::pieceBorderColors[pieceIndex]);
+		Color mainColor{colors::piece[pieceIndex]};
+		Color borderColor{colors::pieceBorder[pieceIndex]};
+
+		if (gridPosition.x < 0 || gridPosition.y < 0 || gridPosition.x > game::columns - 1 || gridPosition.y > game::rows - 1)
+		{
+			mainColor = Fade(mainColor, 0.15f);
+			borderColor = Fade(borderColor, 1.0f);
+		}
+
+		DrawCube(position, game::cubeSize.x, game::cubeSize.y, game::cubeSize.z, mainColor);
+		DrawCubeWires(position, game::cubeSize.x, game::cubeSize.y, game::cubeSize.z, borderColor);
 	}
+
 }
 
 input::PieceActions input::getPieceAction()

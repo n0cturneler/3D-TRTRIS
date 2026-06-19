@@ -19,7 +19,143 @@ namespace pieceData
 
 	// {1, 1} move towards bottom right 
 	// {-1, -1} towards top left
-	inline constexpr PieceRotations T_Piece{
+
+	inline constexpr PieceRotations I{
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{-1, 0},
+			Grid2D{1, 0},
+			Grid2D{2, 0}
+	},
+		PieceOffset{
+			Grid2D{1, 0},
+			Grid2D{1, -1},
+			Grid2D{1, 1},
+			Grid2D{1, 2}
+	},
+		PieceOffset{
+			Grid2D{0, 1},
+			Grid2D{-1, 1},
+			Grid2D{1, 1},
+			Grid2D{2, 1}
+	},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{0, -1},
+			Grid2D{0, 1},
+			Grid2D{0, 2}
+	}
+	};
+
+	inline constexpr PieceRotations J{
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{-1, 0},
+			Grid2D{1, 0},
+			Grid2D{-1, -1}
+	},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{0, -1},
+			Grid2D{1, -1},
+			Grid2D{0, 1}
+	},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{-1, 0},
+			Grid2D{1, 0},
+			Grid2D{1, 1}
+	},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{0, -1},
+			Grid2D{0, 1},
+			Grid2D{-1, -1}
+	}
+	};
+
+	inline constexpr PieceRotations L{
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{1, 0},
+			Grid2D{-1, 0},
+			Grid2D{1, -1}
+	},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{0, 1},
+			Grid2D{0, -1},
+			Grid2D{1, 1}
+	},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{1, 0},
+			Grid2D{-1, 0},
+			Grid2D{-1, 1}
+	},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{0, 1},
+			Grid2D{0, -1},
+			Grid2D{-1, -1}
+	}
+	};
+
+	inline constexpr PieceRotations O{
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{1, 0},
+			Grid2D{1, -1},
+			Grid2D{0, -1}
+	},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{1, 0},
+			Grid2D{1, -1},
+			Grid2D{0, -1}
+	},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{1, 0},
+			Grid2D{1, -1},
+			Grid2D{0, -1}
+	},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{1, 0},
+			Grid2D{1, -1},
+			Grid2D{0, -1}
+	}
+	};
+
+	inline constexpr PieceRotations S{
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{0, -1},
+			Grid2D{1, -1},
+			Grid2D{-1, 0}
+	},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{0, -1},
+			Grid2D{1, 0},
+			Grid2D{1, 1}
+	},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{1, 0},
+			Grid2D{0, 1},
+			Grid2D{-1, 1}
+	},
+		PieceOffset{
+			Grid2D{0, 0},
+			Grid2D{-1, 0},
+			Grid2D{-1, -1},
+			Grid2D{0, 1}
+	}
+	};
+
+	inline constexpr PieceRotations T{
 		PieceOffset{
 			Grid2D{0, 0},
 			Grid2D{1, 0},
@@ -46,7 +182,7 @@ namespace pieceData
 	}
 	};
 
-	inline constexpr PieceRotations Z_Piece{
+	inline constexpr PieceRotations Z{
 		PieceOffset{
 			Grid2D{0, 0},
 			Grid2D{0, -1},
@@ -75,8 +211,13 @@ namespace pieceData
 
 	inline constexpr Pieces Data
 	{
-		T_Piece,
-		Z_Piece,
+		I,
+		J,
+		L,
+		O,
+		S,
+		T,
+		Z
 	};
 
 }
@@ -87,7 +228,7 @@ namespace input
 	{
 		bool movLeft{};
 		bool movRight{};
-		
+
 		bool holdLeft{};
 		bool holdRight{};
 
@@ -109,17 +250,19 @@ class Piece
 public:
 
 	struct HoldState
-	{	
+	{
 		std::chrono::time_point<std::chrono::steady_clock> lastPress;
 		std::chrono::time_point<std::chrono::steady_clock> lastMove;
 	};
 
-	enum class Type { T, Z };
+	enum class Type { I, J, L, O, S, T, Z };
 
 	Piece(grid::Grid2D spawnPos, Type type, int rotationState = 0);
 
 	void updatePiece(const input::PieceActions& actions, std::chrono::time_point<std::chrono::steady_clock>& lastGravityTick);
 	void drawPiece() const;
+
+	Type type() const { return m_type; }
 
 private:
 	grid::Grid2D m_gridPos{0, 0};

@@ -34,8 +34,8 @@ int main()
 	[[maybe_unused]] const int screenWidth{GetMonitorWidth(currentMonitor)};
 	[[maybe_unused]] const int screenHeight{GetMonitorHeight(currentMonitor)};
 
-	Camera3D camera{cam::initializeCamera()};	
-	Piece piece1{{options::game::gridSpawn}, Piece::Type::Z};
+	Camera3D camera{cam::initializeCamera()};
+	Piece piece1{options::game::gridSpawn, Piece::Type::I};
 
 	std::chrono::time_point<std::chrono::steady_clock> lastGravityTick{std::chrono::steady_clock::now()};
 
@@ -49,7 +49,7 @@ int main()
 		input::PieceActions currentAction{input::getPieceAction()};
 		piece1.updatePiece(currentAction, lastGravityTick);
 
-		ClearBackground(BLACK);
+		ClearBackground(options::colors::background);
 		BeginMode3D(camera);
 		
 		Background::draw();
