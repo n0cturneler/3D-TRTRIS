@@ -70,7 +70,7 @@ namespace pieceData
 			Grid2D{0, 0},
 			Grid2D{0, -1},
 			Grid2D{0, 1},
-			Grid2D{-1, -1}
+			Grid2D{-1, 1}
 	}
 	};
 

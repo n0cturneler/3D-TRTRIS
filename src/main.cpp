@@ -37,6 +37,9 @@ int main()
 	Camera3D camera{cam::initializeCamera()};
 	Piece piece1{options::game::gridSpawn, Piece::Type::I};
 
+	std::vector<Piece> pieceArray{};
+	std::vector<cube::Cube> cubeArray{};
+
 	std::chrono::time_point<std::chrono::steady_clock> lastGravityTick{std::chrono::steady_clock::now()};
 
 	while (!WindowShouldClose())
