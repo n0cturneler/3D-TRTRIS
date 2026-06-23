@@ -4,10 +4,11 @@
 
 #include "Options.hpp"
 #include "Background.hpp"
+#include "PieceType.hpp"
 #include "Pieces.hpp"
 #include "Camera.hpp"
 #include "UI.hpp"
-#include "Cube.hpp"
+#include "Cell.hpp"
 
 #include <raylib.h>
 
@@ -18,6 +19,7 @@
 #include <cstdint>
 #include <print>
 #include <chrono>
+#include <random>
 
 int main()
 {
@@ -35,10 +37,16 @@ int main()
 	[[maybe_unused]] const int screenHeight{GetMonitorHeight(currentMonitor)};
 
 	Camera3D camera{cam::initializeCamera()};
-	Piece piece1{options::game::gridSpawn, Piece::Type::I};
 
-	std::vector<Piece> pieceArray{};
-	std::vector<cube::Cube> cubeArray{};
+	std::array<PieceType, 7> currentBag;
+	std::vector<piece::Piece> activePieces{};
+
+	using Board = std::array<
+		std::array<cell::Cell, options::game::columns>,
+		options::game::rows
+	>;
+
+	Board staticPieces{};
 
 	std::chrono::time_point<std::chrono::steady_clock> lastGravityTick{std::chrono::steady_clock::now()};
 
@@ -49,20 +57,20 @@ int main()
 		float mouseWheelMovement = GetMouseWheelMove();
 		camera.position = cam::updateCamera(camera.position, mouseWheelMovement);
 
+		piece::checkActivePieces(activePieces);
+
 		input::PieceActions currentAction{input::getPieceAction()};
-		piece1.updatePiece(currentAction, lastGravityTick);
+		activePieces.at(0).updatePiece(currentAction, lastGravityTick, staticPieces);
 
 		ClearBackground(options::colors::background);
 		BeginMode3D(camera);
-		
 		Background::draw();
 
-		piece1.drawPiece();
+		activePieces.at(0).drawPiece();
 
 		EndMode3D();
 
 		UI::draw();
-
 		EndDrawing();
 	}
 

@@ -2,6 +2,8 @@
 
 #include "Grid.hpp"
 #include "Options.hpp"
+#include "PieceType.hpp"
+#include "Cell.hpp"
 
 #include <raylib.h>
 
@@ -15,7 +17,7 @@ namespace pieceData
 	using Grid2D = grid::Grid2D;
 	using PieceOffset = std::array<Grid2D, 4>;
 	using PieceRotations = std::array<PieceOffset, 4>;
-	using Pieces = std::array<PieceRotations, 7>;
+	using Pieces = std::array<PieceRotations, 8>;
 
 	// {1, 1} move towards bottom right 
 	// {-1, -1} towards top left
@@ -209,15 +211,18 @@ namespace pieceData
 	}
 	};
 
+	inline constexpr PieceRotations none{};
+
 	inline constexpr Pieces Data
-	{
+	{	
 		I,
 		J,
 		L,
 		O,
 		S,
 		T,
-		Z
+		Z,
+		none,
 	};
 
 }
@@ -243,33 +248,50 @@ namespace input
 	PieceActions getPieceAction();
 }
 
+namespace piece
+{	
+	using Board = std::array<
+		std::array<cell::Cell, options::game::columns>,
+		options::game::rows
+	>;
 
-
-class Piece
-{
-public:
-
-	struct HoldState
+	class Piece
 	{
-		std::chrono::time_point<std::chrono::steady_clock> lastPress;
-		std::chrono::time_point<std::chrono::steady_clock> lastMove;
+	public:
+		struct HoldState
+		{
+			std::chrono::time_point<std::chrono::steady_clock> lastPress;
+			std::chrono::time_point<std::chrono::steady_clock> lastMove;
+		};
+
+		Piece(grid::Grid2D spawnPos, PieceType type, int rotationState = 0);
+
+		void updatePiece(const input::PieceActions& actions, std::chrono::time_point<std::chrono::steady_clock>& lastGravityTick, const Board& staticPieces);
+
+		void drawPiece() const;
+
+		PieceType type() const { return m_type; }
+
+	private:
+		bool isCollidingStaticPiece(const Board& staticPieces, grid::Grid2D testPos) const;
+		bool isCollidingBottom(const Board& staticPieces) const;
+		bool isCollidingSides(const Board& staticPieces, int moveOffset) const;
+
+		HoldState m_leftState{};
+		HoldState m_rightState{};
+
+		std::chrono::time_point<std::chrono::steady_clock> m_lastCollision{};
+
+		grid::Grid2D m_gridPos{0, 0};
+
+		PieceType m_type{};
+		int m_rotationState{0};
+
 	};
 
-	enum class Type { I, J, L, O, S, T, Z };
+	Piece getRandomPiece();
 
-	Piece(grid::Grid2D spawnPos, Type type, int rotationState = 0);
+	void checkActivePieces(std::vector<Piece>& activePieces);
 
-	void updatePiece(const input::PieceActions& actions, std::chrono::time_point<std::chrono::steady_clock>& lastGravityTick);
-	void drawPiece() const;
-
-	Type type() const { return m_type; }
-
-private:
-	grid::Grid2D m_gridPos{0, 0};
-
-	Type m_type{};
-	int m_rotationState{0};
-
-	HoldState m_leftState{};
-	HoldState m_rightState{};
-};
+	Piece generateBag(std::vector<Piece>& currentBag);
+}

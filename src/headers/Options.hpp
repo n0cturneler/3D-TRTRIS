@@ -20,10 +20,12 @@ namespace options
 
 		inline constexpr int bufferRows{20};
 
-		inline constexpr int gravityMS{2000}; // in ms
-		inline constexpr int DAS{166}; // in ms
-		inline constexpr int ARR{33}; // in ms
-		inline constexpr int lockDelayMS{1500}; // in ms
+		// All of these 5 are in milliseconds(ms)
+		inline constexpr int gravityMS{2000}; 
+		inline constexpr int DAS{166}; 
+		inline constexpr int ARR{33}; 
+		inline constexpr int lockDelayMS{1500}; 
+		inline constexpr int softdropMS{60}; 
 
 		//Camera
 		inline constexpr float camScrollRate{5.0f};
@@ -61,8 +63,8 @@ namespace options
 		inline constexpr Color I{5, 255, 205, 255};
 		inline constexpr Color I_Border{0, 80, 60, 255};
 
-		inline constexpr Color J{20, 30, 255, 255};
-		inline constexpr Color J_Border{20, 30, 80, 255};
+		inline constexpr Color J{15, 30, 255, 255};
+		inline constexpr Color J_Border{15, 40, 80, 255};
 
 		inline constexpr Color L{255, 170, 25, 255};
 		inline constexpr Color L_Border{80, 30, 5, 255};
