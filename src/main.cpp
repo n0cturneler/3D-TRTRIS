@@ -39,7 +39,7 @@ int main()
 	Camera3D camera{cam::initializeCamera()};
 
 	std::array<PieceType, 7> currentBag;
-	std::vector<piece::Piece> activePieces{};
+	piece::Piece activePiece{options::game::gridSpawn, piece::getNextType()};
 
 	using Board = std::array<
 		std::array<cell::Cell, options::game::columns>,
@@ -51,26 +51,27 @@ int main()
 	std::chrono::time_point<std::chrono::steady_clock> lastGravityTick{std::chrono::steady_clock::now()};
 
 	while (!WindowShouldClose())
-	{	
+	{
 		[[maybe_unused]] float dt{GetFrameTime()};
-		
+
 		float mouseWheelMovement = GetMouseWheelMove();
 		camera.position = cam::updateCamera(camera.position, mouseWheelMovement);
 
-		piece::checkActivePieces(activePieces);
-
 		input::PieceActions currentAction{input::getPieceAction()};
-		activePieces.at(0).updatePiece(currentAction, lastGravityTick, staticPieces);
+		activePiece.update(currentAction, lastGravityTick, staticPieces);
 
 		ClearBackground(options::colors::background);
 		BeginMode3D(camera);
+
 		Background::draw();
 
-		activePieces.at(0).drawPiece();
+		piece::drawStatic(staticPieces);
+		activePiece.draw();
 
 		EndMode3D();
 
 		UI::draw();
+
 		EndDrawing();
 	}
 

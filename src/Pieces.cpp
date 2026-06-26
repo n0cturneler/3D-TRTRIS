@@ -30,7 +30,7 @@ piece::Piece::Piece(grid::Grid2D spawnPos, PieceType type, int rotationState)
 {
 }
 
-void piece::Piece::updatePiece(const input::PieceActions& actions, std::chrono::time_point<std::chrono::steady_clock>& lastGravityTick, const Board& staticPieces)
+void piece::Piece::update(const input::PieceActions& actions, std::chrono::time_point<std::chrono::steady_clock>& lastGravityTick, Board& staticPieces)
 {
 	using ms = std::chrono::milliseconds;
 	auto now{std::chrono::steady_clock::now()};
@@ -93,15 +93,30 @@ void piece::Piece::updatePiece(const input::PieceActions& actions, std::chrono::
 	auto duration_g = std::chrono::duration_cast<ms>(now - lastGravityTick);
 	if (duration_g.count() >= currentDropRate)
 	{
-		lastGravityTick = now;
 		if (not isCollidingBottom(staticPieces))
 		{
+			lastGravityTick = now;
+
 			m_gridPos.y += 1;
 		}
+		else if (duration_g.count() >= game::lockDelayMS)
+		{	
+			lastGravityTick = now;
+			setStaticData(staticPieces);
+			reset();
+		}
+	}
+
+	if (actions.hardDrop)
+	{
+		lastGravityTick = now;
+		m_gridPos = setHardDropPos(staticPieces);
+		setStaticData(staticPieces);
+		reset();
 	}
 }
 
-void piece::Piece::drawPiece() const
+void piece::Piece::draw() const
 {
 	assert(m_type != PieceType::none);
 	assert(static_cast<int>(m_type) <= 6);
@@ -131,7 +146,13 @@ void piece::Piece::drawPiece() const
 		DrawCube(position, game::cubeSize.x, game::cubeSize.y, game::cubeSize.z, mainColor);
 		DrawCubeWires(position, game::cubeSize.x, game::cubeSize.y, game::cubeSize.z, borderColor);
 	}
+}
 
+void piece::Piece::reset()
+{
+	m_gridPos = game::gridSpawn;
+	m_rotationState = 0;
+	m_type = {getNextType()};
 }
 
 bool piece::Piece::isCollidingStaticPiece(const Board& staticPieces, grid::Grid2D testPos) const
@@ -159,19 +180,17 @@ bool piece::Piece::isCollidingSides(const Board& staticPieces, int moveOffset) c
 	auto rotationState{static_cast<std::size_t>(m_rotationState)};
 	const auto& data{pieceData::Data[pieceIndex][rotationState]};
 
-	for (grid::Grid2D offset : data)
+	for (const grid::Grid2D& offset : data)
 	{
 		grid::Grid2D testPos{grid::add(offset, m_gridPos)};
 
 		testPos.x += moveOffset;
 
-		//static piece collision
 		if (isCollidingStaticPiece(staticPieces, testPos))
 		{
 			return true;
 		}
 
-		//x border 
 		if ((testPos.x < 0) || (testPos.x >= game::columns))
 		{
 			return true;
@@ -191,19 +210,19 @@ bool piece::Piece::isCollidingBottom(const Board& staticPieces) const
 	auto rotationState{static_cast<std::size_t>(m_rotationState)};
 	const auto& data{pieceData::Data[pieceIndex][rotationState]};
 
-	for (grid::Grid2D offset : data)
+	int maxY{game::rows - 1};
+
+	for (const grid::Grid2D& offset : data)
 	{
 		grid::Grid2D testPos{grid::add(offset, m_gridPos)};
-		testPos.y += 1; // downwards check
+		testPos.y += 1;
 
-		//static piece collision
 		if (isCollidingStaticPiece(staticPieces, testPos))
 		{
 			return true;
 		}
 		
-		//y border 
-		if (testPos.y > (game::rows - 1))
+		if (testPos.y > maxY)
 		{
 			return true;
 		}
@@ -212,21 +231,94 @@ bool piece::Piece::isCollidingBottom(const Board& staticPieces) const
 	return false;
 }
 
-piece::Piece piece::getRandomPiece()
+void piece::Piece::setStaticData(Board& staticPieces) const
 {
-	int pieceIndex{Random::get(0, 6)};
+	assert(m_type != PieceType::none);
+	assert(static_cast<int>(m_type) <= 6);
+	assert(m_rotationState >= 0 && m_rotationState <= 3);
 
-	Piece pieceSpawned{game::gridSpawn, static_cast<PieceType>(pieceIndex)}; 
-	return pieceSpawned;
+	auto pieceIndex{static_cast<std::size_t>(m_type)};
+	auto rotationState{static_cast<std::size_t>(m_rotationState)};
+	const auto& data{pieceData::Data[pieceIndex][rotationState]};
+
+	for (const grid::Grid2D& offset : data)
+	{	
+		grid::Grid2D testPos{grid::add(offset, m_gridPos)};
+
+		if (testPos.x >= 0 &&
+			testPos.x < game::columns &&
+			testPos.y >= 0 &&
+			testPos.y < game::rows)
+		{
+			if (staticPieces[static_cast<std::size_t>(testPos.y)][static_cast<std::size_t>(testPos.x)].type == PieceType::none)
+			{
+				staticPieces[static_cast<std::size_t>(testPos.y)][static_cast<std::size_t>(testPos.x)].type = m_type;
+			}
+		}
+	}
 }
 
-void piece::checkActivePieces(std::vector<Piece>& activePieces)
-{
-	if (activePieces.size() == 0)
-	{
-		Piece pieceSpawned{getRandomPiece()};
-		activePieces.push_back(pieceSpawned);
+grid::Grid2D piece::Piece::setHardDropPos(const Board& staticPieces)
+{	
+	assert(m_type != PieceType::none);
+	assert(static_cast<int>(m_type) <= 6);
+	assert(m_rotationState >= 0 && m_rotationState <= 3);
+
+	auto pieceIndex{static_cast<std::size_t>(m_type)};
+	auto rotationState{static_cast<std::size_t>(m_rotationState)};
+	const auto& data{pieceData::Data[pieceIndex][rotationState]};
+
+	int maxY{game::rows - 1};
+
+	for (int y{0}; y <= (maxY - m_gridPos.y); ++y)
+	{	
+		for (const grid::Grid2D& offset : data)
+		{
+			grid::Grid2D testPos{grid::add(offset, m_gridPos)};
+			testPos.y += y;
+
+			if (isCollidingStaticPiece(staticPieces, testPos))
+			{	
+				return {m_gridPos.x, m_gridPos.y + y - 1};
+			}
+			std::cout << '[' << m_gridPos.x << ", " << m_gridPos.y << ']';
+			if (testPos.y >= maxY)
+			{	
+				return {m_gridPos.x, m_gridPos.y + y};
+			}
+			
+		}
+		std::cout << '\n';
 	}
+	return m_gridPos;
+}
+
+void piece::drawStatic(const Board& staticPieces)
+{
+	for (int y{0}; y < game::rows; ++y)
+	{	
+		for (int x{0}; x < game::columns; ++x)
+		{
+			if (staticPieces[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].type != PieceType::none)
+			{	
+				auto pieceIndex{static_cast<std::size_t>(staticPieces[static_cast<std::size_t>(y)][static_cast<std::size_t>(x)].type)};
+
+				Color mainColor{colors::piece[pieceIndex]};
+				Color borderColor{colors::pieceBorder[pieceIndex]};
+
+				Vector3 position = grid::gridToWorld({x, y});
+
+				DrawCube(position, game::cubeSize.x, game::cubeSize.y, game::cubeSize.z, mainColor);
+				DrawCubeWires(position, game::cubeSize.x, game::cubeSize.y, game::cubeSize.z, borderColor);
+			}
+		}
+	}
+}
+
+PieceType piece::getNextType()
+{
+	int pieceIndex{Random::get(0, 6)};
+	return static_cast<PieceType>(pieceIndex);
 }
 
 input::PieceActions input::getPieceAction()

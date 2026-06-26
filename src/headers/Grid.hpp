@@ -11,5 +11,7 @@ namespace grid
 	};
 
 	Vector3 gridToWorld(Grid2D gridPos);
+
 	Grid2D add(Grid2D grid1, Grid2D grid2);
+	Grid2D inverse(Grid2D grid);
 }

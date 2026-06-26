@@ -14,7 +14,5 @@ namespace cell
 	{
 		PieceType type{PieceType::none};
 	};
-
-	void drawCell(const std::vector<Cell>& cubes);
 }
 
