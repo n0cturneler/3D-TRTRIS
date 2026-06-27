@@ -2,10 +2,11 @@
 
 #include <raylib.h>
 
+#include <chrono>
+
 void UI::draw()
 {
 	FPS();
-	lockDelay();
 }
 
 void UI::FPS()
@@ -13,7 +14,7 @@ void UI::FPS()
 	DrawFPS(10, 10);
 }
 
-void UI::lockDelay()
+void UI::lockDelay(std::chrono::time_point<std::chrono::steady_clock>& lastGravityTick)
 {
 	
 }

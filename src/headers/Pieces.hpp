@@ -12,221 +12,6 @@
 #include <array>
 #include <chrono>
 
-namespace pieceData
-{
-	using Grid2D = grid::Grid2D;
-	using PieceOffset = std::array<Grid2D, 4>;
-	using PieceRotations = std::array<PieceOffset, 4>;
-	using Pieces = std::array<PieceRotations, 8>;
-
-	// {1, 1} move towards bottom right 
-	// {-1, -1} towards top left
-
-	inline constexpr PieceRotations I{
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{-1, 0},
-			Grid2D{1, 0},
-			Grid2D{2, 0}
-	},
-		PieceOffset{
-			Grid2D{1, 0},
-			Grid2D{1, -1},
-			Grid2D{1, 1},
-			Grid2D{1, 2}
-	},
-		PieceOffset{
-			Grid2D{0, 1},
-			Grid2D{-1, 1},
-			Grid2D{1, 1},
-			Grid2D{2, 1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{0, -1},
-			Grid2D{0, 1},
-			Grid2D{0, 2}
-	}
-	};
-
-	inline constexpr PieceRotations J{
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{-1, 0},
-			Grid2D{1, 0},
-			Grid2D{-1, -1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{0, -1},
-			Grid2D{1, -1},
-			Grid2D{0, 1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{-1, 0},
-			Grid2D{1, 0},
-			Grid2D{1, 1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{0, -1},
-			Grid2D{0, 1},
-			Grid2D{-1, 1}
-	}
-	};
-
-	inline constexpr PieceRotations L{
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{1, 0},
-			Grid2D{-1, 0},
-			Grid2D{1, -1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{0, 1},
-			Grid2D{0, -1},
-			Grid2D{1, 1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{1, 0},
-			Grid2D{-1, 0},
-			Grid2D{-1, 1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{0, 1},
-			Grid2D{0, -1},
-			Grid2D{-1, -1}
-	}
-	};
-
-	inline constexpr PieceRotations O{
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{1, 0},
-			Grid2D{1, -1},
-			Grid2D{0, -1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{1, 0},
-			Grid2D{1, -1},
-			Grid2D{0, -1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{1, 0},
-			Grid2D{1, -1},
-			Grid2D{0, -1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{1, 0},
-			Grid2D{1, -1},
-			Grid2D{0, -1}
-	}
-	};
-
-	inline constexpr PieceRotations S{
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{0, -1},
-			Grid2D{1, -1},
-			Grid2D{-1, 0}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{0, -1},
-			Grid2D{1, 0},
-			Grid2D{1, 1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{1, 0},
-			Grid2D{0, 1},
-			Grid2D{-1, 1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{-1, 0},
-			Grid2D{-1, -1},
-			Grid2D{0, 1}
-	}
-	};
-
-	inline constexpr PieceRotations T{
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{1, 0},
-			Grid2D{-1, 0},
-			Grid2D{0, -1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{1, 0},
-			Grid2D{0, 1},
-			Grid2D{0, -1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{1, 0},
-			Grid2D{-1, 0},
-			Grid2D{0, 1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{-1, 0},
-			Grid2D{0, 1},
-			Grid2D{0, -1}
-	}
-	};
-
-	inline constexpr PieceRotations Z{
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{0, -1},
-			Grid2D{-1, -1},
-			Grid2D{1, 0}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{0, 1},
-			Grid2D{1, 0},
-			Grid2D{1, -1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{-1, 0},
-			Grid2D{0, 1},
-			Grid2D{1, 1}
-	},
-		PieceOffset{
-			Grid2D{0, 0},
-			Grid2D{-1, 0},
-			Grid2D{-1, 1},
-			Grid2D{0, -1}
-	}
-	};
-
-	inline constexpr PieceRotations none{};
-
-	inline constexpr Pieces Data
-	{	
-		I,
-		J,
-		L,
-		O,
-		S,
-		T,
-		Z,
-		none,
-	};
-
-}
-
 namespace input
 {
 	struct PieceActions
@@ -268,7 +53,7 @@ namespace piece
 
 		Piece(grid::Grid2D spawnPos, PieceType type, int rotationState = 0);
 
-		void update(const input::PieceActions& actions, std::chrono::time_point<std::chrono::steady_clock>& lastGravityTick, Board& staticPieces);
+		void update(const input::PieceActions& actions, Board& staticPieces);
 		void draw() const;
 		PieceType type() const { return m_type; }
 
@@ -281,12 +66,17 @@ namespace piece
 		
 		void setStaticData(Board& staticPieces) const;
 
-		grid::Grid2D setHardDropPos(const Board& staticPieces);
+		grid::Grid2D getHardDropPos(const Board& staticPieces);
 
 		HoldState m_leftState{};
 		HoldState m_rightState{};
 
 		grid::Grid2D m_gridPos{0, 0};
+
+		std::chrono::time_point<std::chrono::steady_clock> m_lastGravityTick{std::chrono::steady_clock::now()};
+
+		std::chrono::time_point<std::chrono::steady_clock> m_lockStart{std::chrono::steady_clock::now()};
+		int m_lockCount{0};
 
 		PieceType m_type{};
 		int m_rotationState{0};

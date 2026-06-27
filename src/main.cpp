@@ -17,7 +17,6 @@
 #include <iostream> 
 #include <vector>
 #include <cstdint>
-#include <print>
 #include <chrono>
 #include <random>
 
@@ -48,8 +47,6 @@ int main()
 
 	Board staticPieces{};
 
-	std::chrono::time_point<std::chrono::steady_clock> lastGravityTick{std::chrono::steady_clock::now()};
-
 	while (!WindowShouldClose())
 	{
 		[[maybe_unused]] float dt{GetFrameTime()};
@@ -58,7 +55,7 @@ int main()
 		camera.position = cam::updateCamera(camera.position, mouseWheelMovement);
 
 		input::PieceActions currentAction{input::getPieceAction()};
-		activePiece.update(currentAction, lastGravityTick, staticPieces);
+		activePiece.update(currentAction, staticPieces);
 
 		ClearBackground(options::colors::background);
 		BeginMode3D(camera);

@@ -24,14 +24,24 @@ endif()
 find_package(raylib CONFIG REQUIRED)
 target_link_libraries(main PRIVATE raylib)
 
-# Include Dear IMGUI
+# Include Dear ImGui
 find_package(imgui CONFIG REQUIRED)
 target_link_libraries(main PRIVATE imgui::imgui)
+
+# rlImGui wrapper
+target_sources(main PRIVATE
+    ${CMAKE_SOURCE_DIR}/external/rlImGui/rlImGui.cpp
+)
+
+target_include_directories(main PRIVATE
+    ${CMAKE_SOURCE_DIR}/external/rlImGui
+)
 
 # Include headers 
 target_include_directories(main PRIVATE 
     "${CMAKE_CURRENT_SOURCE_DIR}"
     "${CMAKE_CURRENT_SOURCE_DIR}/headers"
+    "${CMAKE_CURRENT_SOURCE_DIR}/assets"
     "${CMAKE_SOURCE_DIR}/libs/include"
 )
 

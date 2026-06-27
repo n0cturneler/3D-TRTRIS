@@ -2,6 +2,7 @@
 
 #include "Grid.hpp"
 #include "PieceType.hpp"
+#include "PieceOffsets.hpp"
 #include "Options.hpp"
 using namespace options;
 
@@ -17,7 +18,6 @@ using Board = std::array<
 #include <raymath.h>
 
 #include <iostream>
-#include <print>
 #include <cmath>
 #include <algorithm>
 #include <chrono>
@@ -30,7 +30,7 @@ piece::Piece::Piece(grid::Grid2D spawnPos, PieceType type, int rotationState)
 {
 }
 
-void piece::Piece::update(const input::PieceActions& actions, std::chrono::time_point<std::chrono::steady_clock>& lastGravityTick, Board& staticPieces)
+void piece::Piece::update(const input::PieceActions& actions, Board& staticPieces)
 {
 	using ms = std::chrono::milliseconds;
 	auto now{std::chrono::steady_clock::now()};
@@ -38,16 +38,20 @@ void piece::Piece::update(const input::PieceActions& actions, std::chrono::time_
 	if (actions.movLeft)
 	{
 		m_leftState.lastPress = now;
+		
 		if (not isCollidingSides(staticPieces, -1))
-		{
+		{	
+			m_lockStart = now;
 			m_gridPos.x -= 1;
 		}
 	}
 	if (actions.movRight)
 	{
 		m_rightState.lastPress = now;
+
 		if (not isCollidingSides(staticPieces, 1))
-		{
+		{	
+			m_lockStart = now;
 			m_gridPos.x += 1;
 		}
 	}
@@ -62,6 +66,7 @@ void piece::Piece::update(const input::PieceActions& actions, std::chrono::time_
 			m_leftState.lastMove = now;
 			if (not isCollidingSides(staticPieces, -1))
 			{
+				m_lockStart = now;
 				m_gridPos.x -= 1;
 			}
 		}
@@ -76,43 +81,61 @@ void piece::Piece::update(const input::PieceActions& actions, std::chrono::time_
 			m_rightState.lastMove = now;
 			if (not isCollidingSides(staticPieces, 1))
 			{
+				m_lockStart = now;
 				m_gridPos.x += 1;
 			}
 		}
 	}
 
-	if (actions.rotLeft) m_rotationState -= 1;
-	if (actions.rotRight) m_rotationState += 1;
-	if (actions.rot180) m_rotationState += 2;
+	if (actions.rotLeft) 
+	{
+		m_rotationState -= 1;
+		m_lockStart = now;
+	}
+	if (actions.rotRight)
+	{
+		m_rotationState += 1;
+		m_lockStart = now;
+	}
+	if (actions.rot180) 
+	{
+		m_rotationState += 2;
+		m_lockStart = now;
+	}
 
 	m_rotationState = (m_rotationState + 4) % 4;
 
 	int currentDropRate{game::gravityMS};
 	if (actions.softDrop) { currentDropRate = game::softdropMS; }
 
-	auto duration_g = std::chrono::duration_cast<ms>(now - lastGravityTick);
-	if (duration_g.count() >= currentDropRate)
+	auto duration_grav = std::chrono::duration_cast<ms>(now - m_lastGravityTick);
+	if (duration_grav.count() >= currentDropRate)
 	{
 		if (not isCollidingBottom(staticPieces))
 		{
-			lastGravityTick = now;
-
+			m_lastGravityTick = now;
+			m_lockStart = now;
 			m_gridPos.y += 1;
-		}
-		else if (duration_g.count() >= game::lockDelayMS)
-		{	
-			lastGravityTick = now;
-			setStaticData(staticPieces);
-			reset();
 		}
 	}
 
 	if (actions.hardDrop)
 	{
-		lastGravityTick = now;
-		m_gridPos = setHardDropPos(staticPieces);
+		m_lastGravityTick = now;
+		m_gridPos = getHardDropPos(staticPieces);
 		setStaticData(staticPieces);
 		reset();
+	}
+
+	auto duration_lock = std::chrono::duration_cast<ms>(now - m_lockStart);
+	if (isCollidingBottom(staticPieces))
+	{	
+		if (duration_lock.count() >= game::lockDelayMS)
+		{
+			m_lockStart = now;
+			setStaticData(staticPieces);
+			reset();
+		}
 	}
 }
 
@@ -258,7 +281,7 @@ void piece::Piece::setStaticData(Board& staticPieces) const
 	}
 }
 
-grid::Grid2D piece::Piece::setHardDropPos(const Board& staticPieces)
+grid::Grid2D piece::Piece::getHardDropPos(const Board& staticPieces)
 {	
 	assert(m_type != PieceType::none);
 	assert(static_cast<int>(m_type) <= 6);
@@ -281,14 +304,13 @@ grid::Grid2D piece::Piece::setHardDropPos(const Board& staticPieces)
 			{	
 				return {m_gridPos.x, m_gridPos.y + y - 1};
 			}
-			std::cout << '[' << m_gridPos.x << ", " << m_gridPos.y << ']';
+			
 			if (testPos.y >= maxY)
 			{	
 				return {m_gridPos.x, m_gridPos.y + y};
 			}
 			
 		}
-		std::cout << '\n';
 	}
 	return m_gridPos;
 }

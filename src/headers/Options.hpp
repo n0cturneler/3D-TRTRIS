@@ -22,10 +22,14 @@ namespace options
 
 		// All of these 5 are in milliseconds(ms)
 		inline constexpr int gravityMS{2000}; 
+
 		inline constexpr int DAS{166}; 
 		inline constexpr int ARR{33}; 
+
 		inline constexpr int lockDelayMS{1500}; 
-		inline constexpr int softdropMS{60}; 
+		inline constexpr int lockDelayLimit{15};
+
+		inline constexpr int softdropMS{33}; 
 
 		//Camera
 		inline constexpr float camScrollRate{5.0f};
@@ -54,7 +58,7 @@ namespace options
 
 	namespace colors
 	{
-		inline constexpr Color background{0, 0, 0, 255};
+		inline constexpr Color background{13, 18, 18, 255};
 
 		inline constexpr Color backgroundLines{100, 100, 100, 255};
 		inline constexpr Color backgroundBufferLines{50, 50, 50, 255};
