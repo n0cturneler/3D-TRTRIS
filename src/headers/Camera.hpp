@@ -6,7 +6,7 @@
 
 namespace cam
 {
-	Camera3D initializeCamera();
-	Vector3 updateCamera(const Vector3& position, float mouseWheelState);
+	Camera3D initialize();
+	Vector3 update(const Vector3& position, float mouseWheelState);
 
 }

@@ -13,7 +13,11 @@ find_program(CLANG_TIDY_EXE NAMES "clang-tidy")
 
 if(CLANG_TIDY_EXE)
     set(CLANG_TIDY_CHECKS
-        "-checks=-*,bugprone-*,-bugprone-throwing-static-initialization,-clang-diagnostic-*"
+        "-checks=-*,
+        bugprone-*,
+        -bugprone-easily-swappable-parameters,
+        -bugprone-throwing-static-initialization,
+        -clang-diagnostic-*"
     )
 
     set(CMAKE_CXX_CLANG_TIDY

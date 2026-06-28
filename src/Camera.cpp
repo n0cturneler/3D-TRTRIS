@@ -10,7 +10,7 @@ using namespace options;
 
 namespace cam
 {
-	Camera3D initializeCamera()
+	Camera3D initialize()
 	{
 		Camera3D camera{};
 		camera.position = game::defaultCamPos;
@@ -23,7 +23,7 @@ namespace cam
 		return camera;
 	}
 
-	Vector3 updateCamera(const Vector3& position, float mouseWheelState)
+	Vector3 update(const Vector3& position, float mouseWheelState)
 	{
 		Vector3 newPosition{position};
 

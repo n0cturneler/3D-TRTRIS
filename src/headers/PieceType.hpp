@@ -1,13 +1,21 @@
 #pragma once
 
-enum class PieceType
+#include <string_view>
+
+namespace pieceType
 {
-	I,
-	J,
-	L,
-	O,
-	S,
-	T,
-	Z,
-	none
-};
+	enum class PieceType
+	{
+		I,
+		J,
+		L,
+		O,
+		S,
+		T,
+		Z,
+		none
+	};
+
+	const char* pieceTypeToString(PieceType type);
+}
+

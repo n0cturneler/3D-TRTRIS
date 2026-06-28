@@ -2,7 +2,7 @@
 # project specific logic here.
 
 # Add source to this project's executable.
-add_executable (main  "main.cpp" "Pieces.cpp" "Background.cpp" "UI.cpp" "Grid.cpp" "Camera.cpp"  "Input.cpp")
+add_executable (main  "main.cpp" "Pieces.cpp" "Background.cpp" "UI.cpp" "Grid.cpp" "Camera.cpp"  "Input.cpp" "Bag.cpp" "PieceType.cpp")
 
 if(MSVC)
     target_compile_options(main PRIVATE
@@ -50,6 +50,10 @@ target_include_directories(main PRIVATE
 # 	"${CMAKE_SOURCE_DIR}/libs/lib"
 # )
 
-
+add_custom_command(TARGET main POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/assets
+    $<TARGET_FILE_DIR:main>/assets
+)
 
 

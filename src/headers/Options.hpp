@@ -21,7 +21,7 @@ namespace options
 		inline constexpr int bufferRows{20};
 
 		// All of these 5 are in milliseconds(ms)
-		inline constexpr int gravityMS{2000}; 
+		inline constexpr int gravityMS{1000}; 
 
 		inline constexpr int DAS{166}; 
 		inline constexpr int ARR{33}; 
@@ -35,7 +35,7 @@ namespace options
 		inline constexpr float camScrollRate{5.0f};
 		inline constexpr float camFOVY{45.0f};
 
-		inline constexpr Vector3 defaultCamPos{0.0f, 55.0f, 0.01f};
+		inline constexpr Vector3 defaultCamPos{0.0f, 65.0f, 0.01f};
 		inline constexpr Vector3 camUpVector{0.0f, 1.0f, 0.0f};
 		inline constexpr CameraProjection camProjection{CAMERA_PERSPECTIVE};
 
@@ -62,6 +62,16 @@ namespace options
 
 		inline constexpr Color backgroundLines{100, 100, 100, 255};
 		inline constexpr Color backgroundBufferLines{50, 50, 50, 255};
+
+		// UI
+		inline constexpr Color uiBG{0, 15, 20, 255};
+		inline constexpr Color uiTitleActive{20, 45, 50, 255};
+		inline constexpr Color uiTitleInactive{10, 35, 40, 255};
+
+		inline constexpr Color uiALT1{110, 175, 255, 255};
+
+		inline constexpr Color textLight{180, 215, 255, 255};
+		inline constexpr Color textDark{20, 25, 30, 255};
 
 		//PIECES
 		inline constexpr Color I{5, 255, 205, 255};

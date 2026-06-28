@@ -6,14 +6,18 @@
 #include "Background.hpp"
 #include "PieceType.hpp"
 #include "Pieces.hpp"
+#include "Bag.hpp"
 #include "Camera.hpp"
 #include "UI.hpp"
 #include "Cell.hpp"
 #include "Input.hpp"
 
-#include <raylib.h>
+#include "Random.hpp"
 
+#include <raylib.h>
 #include <imgui.h>
+
+#include <rlImGui.h>
 
 #include <iostream> 
 #include <vector>
@@ -32,14 +36,15 @@ int main()
 
 	SetTargetFPS(options::video::frameRate);
 
-	[[maybe_unused]] const int currentMonitor = GetCurrentMonitor();
-	[[maybe_unused]] const int screenWidth{GetMonitorWidth(currentMonitor)};
-	[[maybe_unused]] const int screenHeight{GetMonitorHeight(currentMonitor)};
+	rlImGuiSetup(true);
+	UI::initialize();
 
-	Camera3D camera{cam::initializeCamera()};
+	Camera3D camera{cam::initialize()};
 
-	std::array<PieceType, 7> currentBag;
-	piece::Piece activePiece{options::game::gridSpawn, piece::getNextType()};
+	bag::Bag currentBag{Random::mt};
+	bag::Bag nextBag{Random::mt};
+
+	piece::Piece activePiece{options::game::gridSpawn, currentBag.getNextpieceType(nextBag)};
 
 	using Board = std::array<
 		std::array<cell::Cell, options::game::columns>,
@@ -52,28 +57,36 @@ int main()
 	{
 		[[maybe_unused]] float dt{GetFrameTime()};
 
-		float mouseWheelMovement = GetMouseWheelMove();
-		camera.position = cam::updateCamera(camera.position, mouseWheelMovement);
+		//float mouseWheelMovement = GetMouseWheelMove();
+		//camera.position = cam::update(camera.position, mouseWheelMovement);
 
 		input::PieceActions currentAction{input::getPieceAction()};
-		activePiece.update(currentAction, staticPieces);
+		activePiece.update(currentAction, staticPieces, currentBag, nextBag);
 
+		BeginDrawing();
 		ClearBackground(options::colors::background);
+
 		BeginMode3D(camera);
 
-		Background::draw();
+			Background::draw();
 
-		activePiece.drawGhostPiece(staticPieces);
-		activePiece.draw();
+			activePiece.drawGhostPiece(staticPieces);
+			activePiece.draw();
 
-		piece::drawStatic(staticPieces);
+			piece::drawStatic(staticPieces);
 
 		EndMode3D();
 
-		UI::draw();
-
+		rlImGuiBegin();
+			
+			UI::FPS();
+			UI::drawBag(currentBag, nextBag);
+			UI::lockDelay(activePiece, staticPieces);
+			
+		rlImGuiEnd();
 		EndDrawing();
 	}
 
+	rlImGuiShutdown();
 	CloseWindow();
 }

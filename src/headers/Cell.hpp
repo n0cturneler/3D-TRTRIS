@@ -12,7 +12,7 @@ namespace cell
 {
 	struct Cell
 	{
-		PieceType type{PieceType::none};
+		pieceType::PieceType type{pieceType::PieceType::none};
 	};
 }
 
