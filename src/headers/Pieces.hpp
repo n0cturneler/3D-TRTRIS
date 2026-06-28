@@ -4,6 +4,7 @@
 #include "Options.hpp"
 #include "PieceType.hpp"
 #include "Cell.hpp"
+#include "Input.hpp"
 
 #include <raylib.h>
 
@@ -11,29 +12,6 @@
 #include <vector>
 #include <array>
 #include <chrono>
-
-namespace input
-{
-	struct PieceActions
-	{
-		bool movLeft{};
-		bool movRight{};
-
-		bool holdLeft{};
-		bool holdRight{};
-
-		bool rotLeft{};
-		bool rotRight{};
-		bool rot180{};
-
-		bool softDrop{};
-		bool hardDrop{};
-
-		bool holdPress{};
-	};
-
-	PieceActions getPieceAction();
-}
 
 namespace piece
 {	
@@ -59,6 +37,8 @@ namespace piece
 
 		void reset();
 
+		void drawGhostPiece(const Board& staticPieces) const;
+
 	private:
 		bool isCollidingStaticPiece(const Board& staticPieces, grid::Grid2D testPos) const;
 		bool isCollidingBottom(const Board& staticPieces) const;
@@ -66,7 +46,8 @@ namespace piece
 		
 		void setStaticData(Board& staticPieces) const;
 
-		grid::Grid2D getHardDropPos(const Board& staticPieces);
+		grid::Grid2D getHardDropPos(const Board& staticPieces) const;
+		
 
 		HoldState m_leftState{};
 		HoldState m_rightState{};
@@ -84,8 +65,6 @@ namespace piece
 	};
 
 	PieceType getNextType();
-
-	Piece generateBag(std::vector<Piece>& currentBag);
 
 	void drawStatic(const Board& staticPieces);
 }
