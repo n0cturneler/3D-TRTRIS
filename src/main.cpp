@@ -9,6 +9,7 @@
 #include "Camera.hpp"
 #include "UI.hpp"
 #include "Cell.hpp"
+#include "Input.hpp"
 
 #include <raylib.h>
 
@@ -62,8 +63,10 @@ int main()
 
 		Background::draw();
 
-		piece::drawStatic(staticPieces);
+		activePiece.drawGhostPiece(staticPieces);
 		activePiece.draw();
+
+		piece::drawStatic(staticPieces);
 
 		EndMode3D();
 

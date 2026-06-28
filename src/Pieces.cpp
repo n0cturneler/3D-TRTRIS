@@ -171,6 +171,36 @@ void piece::Piece::draw() const
 	}
 }
 
+void piece::Piece::drawGhostPiece(const Board& staticPieces) const
+{
+	assert(m_type != PieceType::none);
+	assert(static_cast<int>(m_type) <= 6);
+	assert(m_rotationState >= 0 && m_rotationState <= 3);
+
+	auto pieceIndex{static_cast<std::size_t>(m_type)};
+	auto rotationState{static_cast<std::size_t>(m_rotationState)};
+	const auto& data{pieceData::Data[pieceIndex][rotationState]};
+
+	for (const grid::Grid2D& offset : data)
+	{
+		grid::Grid2D gridPosition = grid::add(getHardDropPos(staticPieces), offset);
+		Vector3 position = grid::gridToWorld(gridPosition);
+
+		if (gridPosition.x >= 0 &&
+			gridPosition.y >= 0 &&
+			gridPosition.x < game::columns &&
+			gridPosition.y < game::rows)
+		{
+			Color mainColor{colors::piece[pieceIndex]};
+			Color darkColor = ColorLerp(mainColor, BLACK, 0.8f);
+
+			DrawCube(position, game::cubeSize.x/2, game::cubeSize.y/2, game::cubeSize.z/2, mainColor);
+			DrawCube(position, game::cubeSize.x, game::cubeSize.y, game::cubeSize.z, Fade(darkColor, 0.75f));
+			DrawCubeWires(position, game::cubeSize.x, game::cubeSize.y, game::cubeSize.z, mainColor);
+		}
+	}
+}
+
 void piece::Piece::reset()
 {
 	m_gridPos = game::gridSpawn;
@@ -281,7 +311,7 @@ void piece::Piece::setStaticData(Board& staticPieces) const
 	}
 }
 
-grid::Grid2D piece::Piece::getHardDropPos(const Board& staticPieces)
+grid::Grid2D piece::Piece::getHardDropPos(const Board& staticPieces) const
 {	
 	assert(m_type != PieceType::none);
 	assert(static_cast<int>(m_type) <= 6);
@@ -291,25 +321,27 @@ grid::Grid2D piece::Piece::getHardDropPos(const Board& staticPieces)
 	auto rotationState{static_cast<std::size_t>(m_rotationState)};
 	const auto& data{pieceData::Data[pieceIndex][rotationState]};
 
-	int maxY{game::rows - 1};
+	int maxY{game::rows};
 
 	for (int y{0}; y <= (maxY - m_gridPos.y); ++y)
 	{	
+		bool collided{false};
+
 		for (const grid::Grid2D& offset : data)
 		{
 			grid::Grid2D testPos{grid::add(offset, m_gridPos)};
 			testPos.y += y;
 
-			if (isCollidingStaticPiece(staticPieces, testPos))
+			if (isCollidingStaticPiece(staticPieces, testPos) || testPos.y >= maxY)
 			{	
-				return {m_gridPos.x, m_gridPos.y + y - 1};
+				collided = true;
+				break;
 			}
-			
-			if (testPos.y >= maxY)
-			{	
-				return {m_gridPos.x, m_gridPos.y + y};
-			}
-			
+		}
+
+		if (collided)
+		{
+			return {m_gridPos.x, m_gridPos.y + y - 1};
 		}
 	}
 	return m_gridPos;
@@ -341,25 +373,4 @@ PieceType piece::getNextType()
 {
 	int pieceIndex{Random::get(0, 6)};
 	return static_cast<PieceType>(pieceIndex);
-}
-
-input::PieceActions input::getPieceAction()
-{
-	input::PieceActions actions{};
-
-	if (IsKeyPressed(KEY_LEFT)) actions.movLeft = true;
-	if (IsKeyPressed(KEY_RIGHT)) actions.movRight = true;
-
-	if (IsKeyDown(KEY_LEFT)) actions.holdLeft = true;
-	if (IsKeyDown(KEY_RIGHT)) actions.holdRight = true;
-
-	if (IsKeyPressed(KEY_SPACE)) actions.hardDrop = true;
-	if (IsKeyDown(KEY_DOWN)) actions.softDrop = true;
-
-	if (IsKeyPressed(KEY_Z)) actions.rotLeft = true;
-	if (IsKeyPressed(KEY_X)) actions.rotRight = true;
-
-	if (IsKeyPressed(KEY_C)) actions.rot180 = true;
-
-	return actions;
 }

@@ -67,7 +67,7 @@ namespace options
 		inline constexpr Color I{5, 255, 205, 255};
 		inline constexpr Color I_Border{0, 80, 60, 255};
 
-		inline constexpr Color J{15, 30, 255, 255};
+		inline constexpr Color J{30, 50, 255, 255};
 		inline constexpr Color J_Border{15, 40, 80, 255};
 
 		inline constexpr Color L{255, 170, 25, 255};
