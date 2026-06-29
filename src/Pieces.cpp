@@ -4,6 +4,7 @@
 #include "PieceType.hpp"
 #include "PieceOffsets.hpp"
 #include "Bag.hpp"
+#include "Wallkicks.hpp"
 #include "Options.hpp"
 using namespace options;
 

@@ -70,10 +70,9 @@ int main()
 
 			Background::draw();
 
+			piece::drawStatic(staticPieces);
 			activePiece.drawGhostPiece(staticPieces);
 			activePiece.draw();
-
-			piece::drawStatic(staticPieces);
 
 		EndMode3D();
 

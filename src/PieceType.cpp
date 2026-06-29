@@ -2,7 +2,7 @@
 
 #include <string_view>
 
-const char* pieceType::pieceTypeToString(PieceType type)
+std::string_view pieceType::pieceTypeToString(PieceType type)
 {
 	switch (type)
 	{

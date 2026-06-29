@@ -16,6 +16,6 @@ namespace pieceType
 		none
 	};
 
-	const char* pieceTypeToString(PieceType type);
+	std::string_view pieceTypeToString(PieceType type);
 }
 

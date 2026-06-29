@@ -25,9 +25,14 @@ void UI::initialize()
         20.0f
     );
 
-    UI::altFontBig = io.Fonts->AddFontFromFileTTF(
+    UI::mainFontBig = io.Fonts->AddFontFromFileTTF(
         "assets/fonts/Space_Grotesk.ttf",
         48.0f
+    );
+
+    UI::mainFontSmall = io.Fonts->AddFontFromFileTTF(
+        "assets/fonts/Space_Grotesk.ttf",
+        12.0f
     );
 
     UI::tetrisFontMedium = io.Fonts->AddFontFromFileTTF(
@@ -51,7 +56,7 @@ void UI::FPS()
     ImGui::PushStyleColor(ImGuiCol_TitleBg, rlImGuiColors::Convert(colors::uiTitleActive));
     ImGui::PushStyleColor(ImGuiCol_WindowBg, rlImGuiColors::Convert(colors::uiBG));
 
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
 
     ImGui::Begin(
@@ -81,7 +86,7 @@ void UI::lockDelay(const piece::Piece& activePiece, const piece::Board& staticPi
                             ImGuiCond_Always, 
                             ImVec2(0.5f, 0.5f)); // anchor pos
 
-    ImGui::SetNextWindowSize(ImVec2(static_cast<float>(GetScreenWidth()) / 4.0f, static_cast<float>(GetScreenHeight()) / 15.0f), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(static_cast<float>(GetScreenWidth()) / 4.0f, static_cast<float>(GetScreenHeight()) / 22.0f), ImGuiCond_Always);
 
     ImGui::PushStyleColor(ImGuiCol_Text, rlImGuiColors::Convert(colors::textLight));
     ImGui::PushStyleColor(ImGuiCol_TitleBgActive, rlImGuiColors::Convert(colors::uiTitleActive));
@@ -90,8 +95,10 @@ void UI::lockDelay(const piece::Piece& activePiece, const piece::Board& staticPi
 
     ImGui::PushStyleColor(ImGuiCol_PlotHistogram, rlImGuiColors::Convert(colors::uiALT1));
 
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
+
+    ImGui::PushFont(UI::mainFontSmall);
 
 	ImGui::Begin(
         "Lock Delay",
@@ -120,10 +127,11 @@ void UI::lockDelay(const piece::Piece& activePiece, const piece::Board& staticPi
     }
 
     ImGui::ProgressBar(tProgress, ImVec2(-1.0f, -1.0f), text.c_str());
+    ImGui::PopFont();
 
     ImGui::PopStyleVar(2);
     ImGui::PopStyleColor(6);
-
+    
     ImGui::End();
 }
 
@@ -141,7 +149,7 @@ void UI::drawBag(bag::Bag& currentBag, bag::Bag& nextBag)
     ImGui::PushStyleColor(ImGuiCol_TitleBg, rlImGuiColors::Convert(colors::uiTitleActive));
     ImGui::PushStyleColor(ImGuiCol_WindowBg, rlImGuiColors::Convert(colors::uiBG));
 
-    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(3.0f, 3.0f));
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2(2.0f, 2.0f));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 5.0f);
 
     ImGui::Begin(
@@ -166,10 +174,12 @@ void UI::drawBag(bag::Bag& currentBag, bag::Bag& nextBag)
         if (i >= currentBag.currentIndex())
         {   
             ImGui::PushStyleColor(ImGuiCol_Text, rlImGuiColors::Convert(colors::piece[static_cast<std::size_t>(currentBag.data()[i])]));
-            ImGui::Text("%s", textToTetrisFont(pieceType::pieceTypeToString(currentBag.data()[i])));
+
+            std::string text = std::string(textToTetrisFont(pieceType::pieceTypeToString(currentBag.data()[i])));
+            ImGui::Text("%s", text.c_str());
+
             ImGui::PopStyleColor();
         }
-        
     }
 
     for (std::size_t i{0}; i < currentBag.currentIndex(); ++i)
@@ -177,8 +187,11 @@ void UI::drawBag(bag::Bag& currentBag, bag::Bag& nextBag)
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
 
+        std::string text = std::string(textToTetrisFont(pieceType::pieceTypeToString(nextBag.data()[i])));
+
         ImGui::PushStyleColor(ImGuiCol_Text, rlImGuiColors::Convert(colors::piece[static_cast<std::size_t>(nextBag.data()[i])]));
-        ImGui::Text("%s", textToTetrisFont(pieceType::pieceTypeToString(nextBag.data()[i])));
+        ImGui::Text("%s", text.c_str());
+
         ImGui::PopStyleColor();
     }
 
@@ -192,9 +205,8 @@ void UI::drawBag(bag::Bag& currentBag, bag::Bag& nextBag)
     ImGui::End();
 }
 
-const char* UI::textToTetrisFont(const char* text)
+std::string_view UI::textToTetrisFont(std::string_view text)
 {   
-
     if (text == "I") return "G";
     if (text == "J") return "N";
     if (text == "L") return "O";

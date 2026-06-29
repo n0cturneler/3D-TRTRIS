@@ -13,7 +13,8 @@
 namespace UI
 {	
 	inline ImFont* mainFont = nullptr;
-	inline ImFont* altFontBig = nullptr;
+	inline ImFont* mainFontBig = nullptr;
+	inline ImFont* mainFontSmall = nullptr;
 	inline ImFont* tetrisFontMedium = nullptr;
 
 	void initialize();
@@ -22,6 +23,6 @@ namespace UI
 	void lockDelay(const piece::Piece& activePiece, const piece::Board& staticPieces);
 	void drawBag(bag::Bag& currentBag, bag::Bag& nextBag);
 
-	const char* textToTetrisFont(const char* text);
+	std::string_view textToTetrisFont(std::string_view text);
 
 }

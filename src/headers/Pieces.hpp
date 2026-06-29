@@ -6,6 +6,7 @@
 #include "Bag.hpp"
 #include "Cell.hpp"
 #include "Input.hpp"
+#include "Wallkicks.hpp"
 
 #include <raylib.h>
 
@@ -34,13 +35,11 @@ namespace piece
 
 		void update(const input::PieceActions& actions, Board& staticPieces, bag::Bag& currentBag, bag::Bag& nextBag);
 		void draw() const;
+		void drawGhostPiece(const Board& staticPieces) const;
 		pieceType::PieceType type() const { return m_type; }
 
-		void drawGhostPiece(const Board& staticPieces) const;
-
 		void reset(bag::Bag& currentBag, bag::Bag& nextBag);
-		
-		std::chrono::time_point<std::chrono::steady_clock> lastGravityTick() const { return m_lastGravityTick; } 
+
 		std::chrono::time_point<std::chrono::steady_clock> lockStart() const { return m_lockStart; } 
 
 		bool isCollidingBottom(const Board& staticPieces) const;
@@ -48,6 +47,9 @@ namespace piece
 	private:
 		bool isCollidingStaticPiece(const Board& staticPieces, grid::Grid2D testPos) const;
 		bool isCollidingSides(const Board& staticPieces, int moveOffset) const;
+
+		grid::Grid2D testWallkick(); // Returns 0 if wallkick failed
+		wallKick::Notation getKickNotation(int newState);
 
 		grid::Grid2D getHardDropPos(const Board& staticPieces) const;
 
